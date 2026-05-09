@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: agent
+  profiles:
+    active: pro
+
+  ai:
+    dashscope:
+      api-key: sk-cdd8042bda464eaeb7226f558040816b
+
+server:
+  port: 7878
+  servlet:
+    context-path: /ai
+
+logging:
+  level:
+    com.alibaba.cloud.ai.graph: DEBUG
+    org.springframework.ai: DEBUG
+
+

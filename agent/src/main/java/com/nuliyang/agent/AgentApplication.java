@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import reactor.core.publisher.Flux;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootApplication
@@ -31,19 +32,19 @@ public class AgentApplication {
         ReactAgent agent = customChatModel.getReactAgent();
 
 
-        Flux<NodeOutput> outputFlux = agent.stream(new UserMessage("今天，广州天河区天气怎么样"));
+        Flux<NodeOutput> outputFlux = agent.stream(new UserMessage(
+                "java的Optional是什么类？用简单语句讲解，避免使用专业语句，不要用比喻！"
+        ));
 
-        AtomicInteger flag = new AtomicInteger(6);
+        AtomicBoolean isThinking = new AtomicBoolean(true);
+
+        AtomicBoolean isStreaming = new AtomicBoolean(true);
 
         outputFlux.subscribe(
                 output -> {
                     if (output instanceof StreamingOutput<?> streamingOutput){
                         OutputType outputType = streamingOutput.getOutputType();
                         Message message = streamingOutput.message();
-//                        if (flag.get() > 0){
-//                            flag.decrementAndGet();
-//                            System.out.println("输出类型outputType: " + outputType);
-//                        }
 
 
 
@@ -51,12 +52,19 @@ public class AgentApplication {
                             if (message instanceof AssistantMessage assistantMessage){
                                 Object reasoningContext = assistantMessage.getMetadata().get("reasoningContext");
                                 if (reasoningContext != null && !reasoningContext.toString().isEmpty()){
-                                    if (message.getText() != null){
-                                        System.out.println("[thinking] " + message.getText());
+                                    if (message.getText() != null && isThinking.get()){
+                                        System.out.print("[Thinking] " + message.getText());
+                                        isThinking.set(false);
+                                    }else if (message.getText() != null){
+                                        System.out.print(message.getText());
                                     }
                                 }else {
-                                    if (message.getText() != null && !message.getText().isEmpty()){
-                                        System.out.println(assistantMessage.getText());
+                                    if (message.getText() != null && !message.getText().isEmpty() && isStreaming.get()){
+                                        System.out.println();
+                                        System.out.print(assistantMessage.getText());
+                                        isStreaming.set(false);
+                                    } else if (message.getText() != null && !message.getText().isEmpty() ) {
+                                        System.out.print(assistantMessage.getText());
                                     }
                                 }
                             }
@@ -77,9 +85,13 @@ public class AgentApplication {
                                 }
                             }
 
+                        } else if (outputType == OutputType.AGENT_TOOL_FINISHED) {
+                            if (message instanceof ToolResponseMessage toolResponseMessage){
+                                toolResponseMessage.getResponses().forEach(toolResponse -> {
+                                    System.out.println("工具调用结果" + toolResponse.name() + "==>" +toolResponse.responseData());
+                                });
+                            }
                         }
-                    }else {
-                        System.out.println("outType 不是 StreamingOutput 类型: " + output.getClass().getName());
                     }
 
                 },

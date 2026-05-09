@@ -6,7 +6,7 @@ import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import com.alibaba.cloud.ai.graph.agent.ReactAgent;
 import com.alibaba.cloud.ai.graph.agent.hook.modelcalllimit.ModelCallLimitHook;
 import com.nuliyang.agent.properties.AiProperty;
-import com.nuliyang.agent.tools.ToolsCallBackConfig;
+import com.nuliyang.agent.tools.*;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.ai.chat.model.ChatModel;
@@ -26,7 +26,7 @@ public class CustomChatModel {
 
 
     public CustomChatModel(AiProperty aiProperty,
-                           @Qualifier("toolCallback")ToolCallback tools) {
+                           @Qualifier("toolCallback")List<ToolCallback> tools) {
         // 创建 DashScope API 实例
         DashScopeApi dashScopeApi = DashScopeApi.builder()
                 .apiKey(aiProperty.getApiKey())
@@ -37,7 +37,7 @@ public class CustomChatModel {
         DashScopeChatModel chatModel = DashScopeChatModel.builder()
                 .dashScopeApi(dashScopeApi)
                 .defaultOptions(DashScopeChatOptions.builder()
-                        .model("qwen-plus")
+                        .model("deepseek-v3")
                         .maxToken(2048)
                         .enableThinking(true)
 //                        .enableSearch(true)
@@ -52,7 +52,10 @@ public class CustomChatModel {
                 .model(chatModel)
                 .hooks(ModelCallLimitHook.builder().runLimit(3).build())
                 //使用agent就把tool绑在agent里面
-                .tools(List.of(tools))
+//                .tools(tools)
+//                .resolver(new CustomToolCallBackResolver(tools))
+//                .toolNames("getWeatherTool")
+                .toolCallbackProviders(new CustomToolCallBackProvider( tools))
                 .build();
 
 

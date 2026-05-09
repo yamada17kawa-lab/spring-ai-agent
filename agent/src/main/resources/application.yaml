@@ -13,9 +13,5 @@ server:
   servlet:
     context-path: /ai
 
-logging:
-  level:
-    com.alibaba.cloud.ai.graph: DEBUG
-    org.springframework.ai: DEBUG
 
 

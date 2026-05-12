@@ -39,9 +39,6 @@ public class ChatService {
                 userQuery
         ));
 
-        AtomicBoolean isThinking = new AtomicBoolean(true);
-
-        AtomicBoolean isStreaming = new AtomicBoolean(true);
 
         return outputFlux.flatMap(output -> {
             if (output instanceof StreamingOutput<?> streamingOutput){

@@ -5,6 +5,7 @@ import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import com.alibaba.cloud.ai.graph.agent.ReactAgent;
 import com.alibaba.cloud.ai.graph.agent.hook.modelcalllimit.ModelCallLimitHook;
+import com.alibaba.cloud.ai.graph.agent.interceptor.toolretry.ToolRetryInterceptor;
 import com.nuliyang.agent.hook.CustomPIIDetectionHook;
 import com.nuliyang.agent.properties.AiProperty;
 import com.nuliyang.agent.skills.CustomSkillsAgentHook;
@@ -65,6 +66,7 @@ public class CustomChatModel {
 //                .outputSchema( format)
 //                .outputType(ResultVo.class)
                 .instruction("You are a helpful assistant, answer by Chinese.")
+                .interceptors(new ToolRetryInterceptor.Builder().maxRetries(2).build())
                 .build();
 
 

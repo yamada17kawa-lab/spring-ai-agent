@@ -11,7 +11,11 @@ spring:
 server:
   port: 7878
   servlet:
-    context-path: /ai
+    context-path: /api
+
+logging:
+  level:
+    com/nuliyang/agent: debug
 
 
 

@@ -5,18 +5,14 @@ import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import com.alibaba.cloud.ai.graph.agent.ReactAgent;
 import com.alibaba.cloud.ai.graph.agent.hook.modelcalllimit.ModelCallLimitHook;
-import com.nuliyang.agent.hook.CustomHumanInTheLoopHook;
 import com.nuliyang.agent.hook.CustomPIIDetectionHook;
 import com.nuliyang.agent.properties.AiProperty;
 import com.nuliyang.agent.skills.CustomSkillsAgentHook;
 import com.nuliyang.agent.tools.*;
 import com.nuliyang.agent.vo.ResultVo;
-import lombok.Data;
 import lombok.Getter;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.tool.ToolCallback;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -67,8 +63,8 @@ public class CustomChatModel {
                         ModelCallLimitHook.builder().runLimit(3).build()
                 ))
 //                .outputSchema( format)
-                .outputType(ResultVo.class)
-                .systemPrompt("You are a helpful assistant, answer by Chinese.")
+//                .outputType(ResultVo.class)
+                .instruction("You are a helpful assistant, answer by Chinese.")
                 .build();
 
 

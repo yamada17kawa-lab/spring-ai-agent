@@ -16,7 +16,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import reactor.core.publisher.Flux;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootApplication
 public class AgentApplication {
@@ -33,7 +32,7 @@ public class AgentApplication {
 
 
         Flux<NodeOutput> outputFlux = agent.stream(new UserMessage(
-                "java的Optional是什么类？用简单语句讲解，避免使用专业语句，不要用比喻！"
+                "使用article-writing技能写一个虐心的故事，很刀很刀的，要出乎意料的，让人突然很难受的那种故事。"
         ));
 
         AtomicBoolean isThinking = new AtomicBoolean(true);

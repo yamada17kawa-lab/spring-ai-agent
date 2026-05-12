@@ -5,11 +5,16 @@ import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import com.alibaba.cloud.ai.graph.agent.ReactAgent;
 import com.alibaba.cloud.ai.graph.agent.hook.modelcalllimit.ModelCallLimitHook;
+import com.nuliyang.agent.hook.CustomHumanInTheLoopHook;
+import com.nuliyang.agent.hook.CustomPIIDetectionHook;
 import com.nuliyang.agent.properties.AiProperty;
+import com.nuliyang.agent.skills.CustomSkillsAgentHook;
 import com.nuliyang.agent.tools.*;
+import com.nuliyang.agent.vo.ResultVo;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -46,16 +51,24 @@ public class CustomChatModel {
                         .build())
                 .build();
 
+        //输出规范化
+        String format = new BeanOutputConverter<>(ResultVo.class).getFormat();
+
+
         //创建Agent
         this.reactAgent = ReactAgent.builder()
                 .name("my_agent")
                 .model(chatModel)
-                .hooks(ModelCallLimitHook.builder().runLimit(3).build())
                 //使用agent就把tool绑在agent里面
-//                .tools(tools)
-//                .resolver(new CustomToolCallBackResolver(tools))
-//                .toolNames("getWeatherTool")
-                .toolCallbackProviders(new CustomToolCallBackProvider( tools))
+                .toolCallbackProviders(new CustomToolCallBackProvider(tools))
+                .hooks(List.of(
+                        CustomPIIDetectionHook.getPIIDetectionHook(),
+                        CustomSkillsAgentHook.getSkillsAgentHook(),
+                        ModelCallLimitHook.builder().runLimit(3).build()
+                ))
+//                .outputSchema( format)
+                .outputType(ResultVo.class)
+                .systemPrompt("You are a helpful assistant, answer by Chinese.")
                 .build();
 
 

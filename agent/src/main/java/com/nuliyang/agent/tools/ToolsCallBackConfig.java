@@ -1,5 +1,6 @@
 package com.nuliyang.agent.tools;
 
+import com.nuliyang.agent.dto.UserToolRequest;
 import com.nuliyang.agent.dto.WeatherRequest;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.function.FunctionToolCallback;
@@ -20,13 +21,20 @@ public class ToolsCallBackConfig {
 
 
     @Bean("toolCallback")
-    public List<ToolCallback> getToolCallback(WeatherTool weatherTool) {
+    public List<ToolCallback> getToolCallback(WeatherTool weatherTool,
+                                              UserTool userTool) {
         ArrayList<ToolCallback> toolCallbackArrayList = new ArrayList<>();
 
         toolCallbackArrayList.add(FunctionToolCallback.builder("getWeatherTool",
                         weatherTool)
                 .inputType(WeatherRequest.class)
                 .description("get weather info")
+                .build());
+
+        toolCallbackArrayList.add(FunctionToolCallback.builder("getUserInfo",
+                        userTool)
+                .inputType(UserToolRequest.class)
+                .description("get user info")
                 .build());
 
         Method getCurrentTime = ReflectionUtils.findMethod(DataTimeTool.class, "getCurrentTime", String.class);
